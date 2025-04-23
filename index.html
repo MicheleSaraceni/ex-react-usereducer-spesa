@@ -11,6 +11,7 @@
     <title>Carrello della spesa</title>
 
     <script type="text/babel">
+        //Array di prodotti
         const products = [
             { name: 'Mela', price: 0.5 },
             { name: 'Pane', price: 1.2 },
@@ -18,41 +19,85 @@
             { name: 'Pasta', price: 0.7 },
         ];
 
-        function ListaProdotti() {
+        const { useState, Fragment } = React;
 
+        //App montata sul main
+        function App() {
+            const [addedProducts, setAddedProducts] = useState([]);
             return (
                 <>
-                    <h1>LISTA PRODOTTI</h1>
-
-                    {products.map(curr =>
-                        <ul>
-                            <li>
-                                Nome: {curr.name}
-                            </li>
-                            <li>
-                                Prezzo: {curr.price}
-                            </li>
-                        </ul>
-                    )}
-
+                    <ListaProdotti addedProducts={addedProducts} setAddedProducts={setAddedProducts} />
+                    <ListaCarrello addedProducts={addedProducts} />
                 </>
             )
         }
 
-    </script>
-    <script type="text/babel">
+
+        //Funzione che popola la pagina con i prodotti
+        function ListaProdotti({ addedProducts, setAddedProducts }) {
+            const addToCart = (curr) => {
+                if (!addedProducts.some(item => item.name === curr.name)) {
+                    setAddedProducts([...addedProducts, {
+                        name: curr.name,
+                        price: curr.price,
+                        quantity: 1
+                    }])
+                }
+                console.log(addedProducts)
+            }
+
+            return (
+                <>
+                    <h1>LISTA PRODOTTI</h1>
+                    {products.map((curr, index) =>
+                        <Fragment key={index}>
+                            <ul>
+                                <li>Nome: {curr.name}</li>
+                                <li>Prezzo: {curr.price}</li>
+                            </ul>
+                            <button onClick={() => addToCart(curr)}>Aggiungi</button>
+                        </Fragment >
+                    )}
+                </>
+            )
+        }
+
+
+        //Funzione che popola la pagina con i prodotti aggiunti al carrello
+        function ListaCarrello({ addedProducts }) {
+
+            return (
+                <>
+                    <h1>CARRELLO</h1>
+                    {addedProducts.length > 0 && (
+                        addedProducts.map((curr, index) => (
+                            <Fragment key={index}>
+                                <ul>
+                                    <li>Nome: {curr.name}</li>
+                                    <li>Prezzo: {curr.price}</li>
+                                    <li>Quantità: {curr.quantity}</li>
+                                </ul>
+                            </Fragment>
+                        ))
+                    )}
+                </>
+            )
+        }
+
+
+        //Monto il componente App nel tag main
         const { createRoot } = ReactDOM;
-        const listaProdotti = document.querySelector(".lista_prodotti");
-        const root = createRoot(listaProdotti);
-        root.render(<ListaProdotti />)
+        const main = document.querySelector("main");
+        const root = createRoot(main);
+        root.render(<App />)
     </script>
 
 </head>
 
 <body>
-    <main>
-        <div class="lista_prodotti"></div>
-    </main>
+
+    <main></main>
+
 </body>
 
 </html>
