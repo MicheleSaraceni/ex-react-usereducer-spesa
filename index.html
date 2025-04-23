@@ -27,7 +27,7 @@
             return (
                 <>
                     <ListaProdotti addedProducts={addedProducts} setAddedProducts={setAddedProducts} />
-                    <ListaCarrello addedProducts={addedProducts} />
+                    <ListaCarrello addedProducts={addedProducts} setAddedProducts={setAddedProducts} />
                 </>
             )
         }
@@ -35,13 +35,23 @@
 
         //Funzione che popola la pagina con i prodotti
         function ListaProdotti({ addedProducts, setAddedProducts }) {
-            const addToCart = (curr) => {
-                if (!addedProducts.some(item => item.name === curr.name)) {
+            const addToCart = (product) => {
+                if (!addedProducts.some(item => item.name === product.name)) {
                     setAddedProducts([...addedProducts, {
-                        name: curr.name,
-                        price: curr.price,
+                        name: product.name,
+                        price: product.price,
                         quantity: 1
                     }])
+                } else {
+                    const updateProductQuantity = (addedProducts, product) => {
+                        return addedProducts.map(curr => {
+                            if (product.name === curr.name) {
+                                return { ...curr, quantity: curr.quantity + 1 }
+                            }
+                            return curr;
+                        })
+                    }
+                    setAddedProducts(updateProductQuantity(addedProducts, product))
                 }
                 console.log(addedProducts)
             }
@@ -64,7 +74,22 @@
 
 
         //Funzione che popola la pagina con i prodotti aggiunti al carrello
-        function ListaCarrello({ addedProducts }) {
+        function ListaCarrello({ addedProducts, setAddedProducts }) {
+
+            const removeFromCart = (index) => {
+                const productsCopy = [...addedProducts]
+
+                if (productsCopy[index].quantity === 1) {
+                    productsCopy.splice(index, 1);
+                } else {
+                    productsCopy[index] = {
+                        ...productsCopy[index],
+                        quantity: productsCopy[index].quantity - 1
+                    };
+                }
+
+                setAddedProducts(productsCopy);
+            }
 
             return (
                 <>
@@ -77,12 +102,14 @@
                                     <li>Prezzo: {curr.price}</li>
                                     <li>Quantità: {curr.quantity}</li>
                                 </ul>
+                                <button onClick={() => removeFromCart(index)}>Rimuovi</button>
                             </Fragment>
                         ))
                     )}
                 </>
             )
         }
+
 
 
         //Monto il componente App nel tag main
