@@ -19,7 +19,7 @@
             { name: 'Pasta', price: 0.7 },
         ];
 
-        const { useState, Fragment } = React;
+        const { useState, useEffect, Fragment } = React;
 
         //App montata sul main
         function App() {
@@ -87,25 +87,33 @@
                         quantity: productsCopy[index].quantity - 1
                     };
                 }
-
                 setAddedProducts(productsCopy);
             }
+
+            const [totPrice, setTotPrice] = useState(0);
+            useEffect(() => {
+                const countPrice = addedProducts.reduce((acc, curr) => acc = acc + curr.price * curr.quantity, 0);
+                setTotPrice(countPrice)
+            }, [addedProducts])
 
             return (
                 <>
                     <h1>CARRELLO</h1>
                     {addedProducts.length > 0 && (
                         addedProducts.map((curr, index) => (
-                            <Fragment key={index}>
+
+                            < Fragment key={index} >
                                 <ul>
                                     <li>Nome: {curr.name}</li>
                                     <li>Prezzo: {curr.price}</li>
                                     <li>Quantità: {curr.quantity}</li>
                                 </ul>
                                 <button onClick={() => removeFromCart(index)}>Rimuovi</button>
-                            </Fragment>
+                            </Fragment >
                         ))
-                    )}
+                    )
+                    }
+                    <h1>Tot prezzo: {totPrice.toFixed(2)}€</h1>
                 </>
             )
         }
